@@ -9,7 +9,7 @@ router.get('/api/listone/:idnote', controller.ListOne)
 router.post('/api/save',controller.Save);
 router.delete('/api/delete/:idnote',controller.Delete)
 router.put('/api/update/:idnote',controller.Update);
-// router.get('/api/save',)
+router.get('/api/getbyname/:title', controller.getOneByTitle);
 
 
 module.exports = router

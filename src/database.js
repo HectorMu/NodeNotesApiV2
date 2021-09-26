@@ -2,11 +2,11 @@ const mysql = require('mysql')
 const {promisify } = require('util')
 
 const Dbpool = mysql.createPool({
-    host: 'localhost',
+    host: process.env.DB_HOST,
     port: 3306,
-    user: 'root',
-    password:'',
-    database: 'nodenotes',
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
 })
 Dbpool.getConnection((err, connection)=>{
     if(err){

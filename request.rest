@@ -12,13 +12,13 @@ POST http://localhost:4000/api/save
 Content-Type: application/json
 
 {
-    "title":"Prueba",
-    "content":"content prueba",
+    "title":"Prueba 5",
+    "content":"content prueba 5",
     "importance":"dark"
 }
 
 ###
-DELETE http://localhost:4000/api/delete/93
+DELETE http://localhost:4000/api/delete/102
 
 ###
 PUT http://localhost:4000/api/update/91
@@ -29,3 +29,8 @@ Content-Type: application/json
     "content":"contenido prueba",
     "importance":"danger"
 }
+
+###
+
+GET http://localhost:4000/api/getbyname/tac
+
