@@ -17,6 +17,7 @@ app.use(express.json())
 app.use('/', require("./routes/indexRoutes.js"))
 
 //initialazing the server
-app.listen(port = 4000 || process.env.PORT,()=>{
-    console.log(`Listening on port ${port}`)
-})
+let port = process.env.PORT || 4000
+app.listen(port,()=>{
+console.log('Server started on port', port)
+}) 
