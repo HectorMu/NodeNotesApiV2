@@ -34,3 +34,13 @@ Content-Type: application/json
 
 GET http://localhost:4000/api/getbyname/tac
 
+###
+POST http://localhost:4000/api/login 
+Content-Type: application/json
+
+{
+    "email":"hector@gmail.com",
+    "pass":"12345678"
+}
+
+
