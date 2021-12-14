@@ -1,5 +1,5 @@
 const connection = require("../database");
-
+const jwt = require("jsonwebtoken");
 let today = new Date();
 const controller = {};
 
@@ -8,13 +8,25 @@ controller.test = (req, res) => {
 };
 
 controller.ListAll = async (req, res) => {
-  const results = await connection.query("Select * from notes");
+  const token = req.headers.authorization.split(" ")[1];
+  const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+  const { user } = decodedToken;
+  const results = await connection.query(
+    "Select * from notes where fkuser = ?",
+    [user.iduser]
+  );
+  if (!results.length > 0)
+    return res.status(200).json({ status: true, statusText: "userNotesEmpty" });
   res.json(results);
 };
 controller.ListOne = async (req, res) => {
   const { idnote } = req.params;
+  const token = req.headers.authorization.split(" ")[1];
+  const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+  const { user } = decodedToken;
   const results = await connection.query(
-    `select * from notes where idnote=${idnote}`
+    `select * from notes where idnote=${idnote} && fkuser = ?`,
+    [user.iduser]
   );
   if (results.length > 0) {
     res.json(results);
@@ -24,9 +36,19 @@ controller.ListOne = async (req, res) => {
 };
 
 controller.Save = async (req, res) => {
-  const { title, content, importance, fkuser } = req.body;
+  const token = req.headers.authorization.split(" ")[1];
+  const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+  const { user } = decodedToken;
+
+  const { title, content, importance } = req.body;
   const createdat = today.toLocaleDateString("en-US");
-  const newNote = { title, content, importance, createdat, fkuser };
+  const newNote = {
+    title,
+    content,
+    importance,
+    createdat,
+    fkuser: user.iduser,
+  };
   try {
     await connection.query("insert into notes set ?", [newNote]);
     res.status(200).json({ status: true });
@@ -38,13 +60,16 @@ controller.Save = async (req, res) => {
 
 controller.Update = async (req, res) => {
   const { idnote } = req.params;
-  const { title, content, importance, fkuser } = req.body;
-  const updatedNote = { title, content, importance, fkuser };
+  const { title, content, importance } = req.body;
+  const token = req.headers.authorization.split(" ")[1];
+  const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+  const { user } = decodedToken;
+  const updatedNote = { title, content, importance, fkuser: user.iduser };
   try {
-    await connection.query("update notes set ? where idnote = ?", [
-      updatedNote,
-      idnote,
-    ]);
+    await connection.query(
+      "update notes set ? where idnote = ? && fkuser  = ?",
+      [updatedNote, idnote, user.iduser]
+    );
     res.status(200).json({ status: true });
   } catch (error) {
     console.log(error);
@@ -53,8 +78,14 @@ controller.Update = async (req, res) => {
 };
 controller.Delete = async (req, res) => {
   const { idnote } = req.params;
+  const token = req.headers.authorization.split(" ")[1];
+  const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+  const { user } = decodedToken;
   try {
-    await connection.query("delete from notes where idnote = ?", [idnote]);
+    await connection.query("delete from notes where idnote = ? && fkuser = ?", [
+      idnote,
+      user.iduser,
+    ]);
     res.status(200).json({ status: true });
   } catch (error) {
     console.log(error);
