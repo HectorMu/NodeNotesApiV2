@@ -20,10 +20,12 @@ controller.login = async (req, res) => {
   const payload = {
     user,
   };
+  const numberOfNotes = await connection.query("select count(*) as quantity from notes where fkuser = ?", [user.iduser])
   const serializedUser = {
     firstname: user.firstname,
     lastname: user.lastname,
     email: user.email,
+    notesCount: numberOfNotes[0].quantity
   };
   const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET);
   res.status(200).json({ accessToken, serializedUser });
