@@ -8,9 +8,7 @@ controller.test = (req, res) => {
 };
 
 controller.ListAll = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-  const { user } = decodedToken;
+  const { user } = req.token;
   const results = await connection.query(
     "Select * from notes where fkuser = ?",
     [user.iduser]
@@ -21,9 +19,7 @@ controller.ListAll = async (req, res) => {
 };
 controller.ListOne = async (req, res) => {
   const { idnote } = req.params;
-  const token = req.headers.authorization.split(" ")[1];
-  const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-  const { user } = decodedToken;
+  const { user } = req.token;
   const results = await connection.query(
     `select * from notes where idnote=${idnote} && fkuser = ?`,
     [user.iduser]
@@ -36,9 +32,7 @@ controller.ListOne = async (req, res) => {
 };
 
 controller.Save = async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-  const { user } = decodedToken;
+  const { user } = req.token;
 
   const { title, content, importance } = req.body;
   const createdat = today.toLocaleDateString("en-US");
@@ -61,9 +55,7 @@ controller.Save = async (req, res) => {
 controller.Update = async (req, res) => {
   const { idnote } = req.params;
   const { title, content, importance } = req.body;
-  const token = req.headers.authorization.split(" ")[1];
-  const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-  const { user } = decodedToken;
+  const { user } = req.token;
   const updatedNote = { title, content, importance, fkuser: user.iduser };
   try {
     await connection.query(
@@ -78,9 +70,7 @@ controller.Update = async (req, res) => {
 };
 controller.Delete = async (req, res) => {
   const { idnote } = req.params;
-  const token = req.headers.authorization.split(" ")[1];
-  const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-  const { user } = decodedToken;
+  const { user } = req.token;
   try {
     await connection.query("delete from notes where idnote = ? && fkuser = ?", [
       idnote,

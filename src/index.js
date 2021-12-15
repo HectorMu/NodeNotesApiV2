@@ -16,6 +16,7 @@ app.use(express.json());
 //using the routes
 app.use(require("./routes/index.routes"));
 app.use(require("./routes/auth.routes"));
+app.use(require("./routes/profile.routes"));
 
 //initialazing the server
 let port = process.env.PORT || 4000;
