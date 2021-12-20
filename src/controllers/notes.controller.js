@@ -1,6 +1,6 @@
 const connection = require("../database");
 const jwt = require("jsonwebtoken");
-let today = new Date();
+
 const controller = {};
 
 controller.test = (req, res) => {
@@ -33,9 +33,14 @@ controller.ListOne = async (req, res) => {
 
 controller.Save = async (req, res) => {
   const { user } = req.token;
-
+  let today = new Date();
   const { title, content, importance } = req.body;
-  const createdat = today.toLocaleDateString("en-US");
+  const day = await today.toLocaleDateString("en-US");
+  const hours =
+    today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+
+  const createdat = day + " " + hours;
+  console.log(createdat);
   const newNote = {
     title,
     content,
