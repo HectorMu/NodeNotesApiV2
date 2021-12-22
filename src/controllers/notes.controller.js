@@ -33,14 +33,8 @@ controller.ListOne = async (req, res) => {
 
 controller.Save = async (req, res) => {
   const { user } = req.token;
-  let today = new Date();
-  const { title, content, importance } = req.body;
-  const day = await today.toLocaleDateString("en-US");
-  const hours =
-    today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+  const { title, content, importance, createdat } = req.body;
 
-  const createdat = day + " " + hours;
-  console.log(createdat);
   const newNote = {
     title,
     content,
