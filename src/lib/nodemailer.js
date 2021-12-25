@@ -29,7 +29,7 @@ Email.Send = async (req, res) => {
     expiresIn: "15m",
   });
   //production
-  const link = `https://reactnodenotesv2.herokuapp.com/reset-password/${token}`;
+  const link = `https://reactnodenotesv2.herokuapp.com/reset/${token}`;
   //dev
   // const link = `http://localhost:3000/reset-password/${token}`;
 
