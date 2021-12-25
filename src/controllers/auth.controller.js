@@ -1,6 +1,7 @@
 const connection = require("../database");
 const jwt = require("jsonwebtoken");
 const helpers = require("../helpers/helpers");
+const nodeMailer = require("../lib/nodemailer");
 const controller = {};
 controller.login = async (req, res) => {
   const { email, pass } = req.body;
@@ -81,6 +82,60 @@ controller.signup = async (req, res) => {
     res
       .status(200)
       .json({ status: false, statusText: "Something wen't wrong." });
+  }
+};
+
+controller.sendRecoverEmail = async (req, res) => {
+  const { email } = req.body;
+  const rows = await connection.query("select * from users where email = ?", [
+    email,
+  ]);
+  if (rows.length > 0) {
+    nodeMailer.Send(req, res);
+  } else {
+    res.status(200).json({
+      status: false,
+      statusText:
+        "Provided email invalid, no existing account with this email.",
+    });
+  }
+};
+controller.VerifyRecoverEmailToken = (req, res) => {
+  const { token } = req.params;
+  try {
+    const decodedToken = jwt.verify(
+      token,
+      process.env.EMAIL_TOKEN_SECRET,
+      (err, decoded) => {
+        if (err) {
+          err = {
+            name: "TokenExpiredError",
+            message: "jwt expired",
+            status: false,
+          };
+          return;
+        } else {
+          return {
+            status: true,
+            decoded,
+          };
+        }
+      }
+    );
+
+    if (!decodedToken.status)
+      return res
+        .status(200)
+        .json({ status: false, statusText: "Invalid toke, token expired" });
+
+    res.status(200).json({ status: true, statusText: "Valid token" });
+  } catch (error) {
+    res
+      .status(200)
+      .json({
+        status: false,
+        statusText: "Invalid token, token malformed or expired",
+      });
   }
 };
 module.exports = controller;
