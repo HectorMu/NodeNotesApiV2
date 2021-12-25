@@ -31,7 +31,7 @@ Email.Send = async (req, res) => {
   //production
   const link = `https://reactnodenotesv2.herokuapp.com/reset/${token}`;
   //dev
-  // const link = `http://localhost:3000/reset-password/${token}`;
+  //const link = `http://localhost:3000/reset/${token}`;
 
   let emailOptions = {
     from: process.env.MAILER_EMAIL,
