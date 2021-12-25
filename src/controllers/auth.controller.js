@@ -126,16 +126,35 @@ controller.VerifyRecoverEmailToken = (req, res) => {
     if (!decodedToken.status)
       return res
         .status(200)
-        .json({ status: false, statusText: "Invalid toke, token expired" });
+        .json({ status: false, statusText: "Invalid token, token expired" });
 
     res.status(200).json({ status: true, statusText: "Valid token" });
   } catch (error) {
-    res
-      .status(200)
-      .json({
-        status: false,
-        statusText: "Invalid token, token malformed or expired",
-      });
+    res.status(200).json({
+      status: false,
+      statusText: "Invalid token, token malformed or expired",
+    });
+  }
+};
+
+controller.ResetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  try {
+    const decodedToken = jwt.verify(token, process.env.EMAIL_TOKEN_SECRET);
+    const { id } = decodedToken;
+    const hashedPassword = await helpers.encryptPassword(password);
+    await connection.query("update users set pass = ? where iduser = ?", [
+      hashedPassword,
+      id,
+    ]);
+    res.status(200).json({ status: true, statusText: "Password changed" });
+  } catch (error) {
+    res.status(200).json({
+      status: false,
+      statusText: "Something wen't wrong, try again later.",
+    });
   }
 };
 module.exports = controller;
